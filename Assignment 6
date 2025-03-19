@@ -1,0 +1,155 @@
+using System;
+
+class Program
+{
+    static int FindMissingNumber(int[] arr, int n)
+    {
+        int totalSum = n * (n + 1) / 2;
+        int arrSum = 0;
+
+        foreach (int num in arr)
+            arrSum += num;
+
+        return totalSum - arrSum;
+    }
+
+    static void Main()
+    {
+        int[] arr = { 1, 2, 4, 5, 6 };
+        int n = 6;
+        Console.WriteLine(FindMissingNumber(arr, n)); // Output: 3
+    }
+}
+
+using System;
+using System.Text;
+
+class Program
+{
+    static string CompressString(string s)
+    {
+        StringBuilder compressed = new StringBuilder();
+        int count = 1;
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (i + 1 < s.Length && s[i] == s[i + 1])
+                count++;
+            else
+            {
+                compressed.Append(s[i]).Append(count);
+                count = 1;
+            }
+        }
+
+        return compressed.Length < s.Length ? compressed.ToString() : s;
+    }
+
+    static void Main()
+    {
+        Console.WriteLine(CompressString("aaabbcddddd")); // Output: "a3b2c1d5"
+    }
+}
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static List<(int, int)> FindPairs(int[] arr, int target)
+    {
+        HashSet<int> set = new HashSet<int>();
+        List<(int, int)> result = new List<(int, int)>();
+
+        foreach (int num in arr)
+        {
+            int complement = target - num;
+            if (set.Contains(complement))
+                result.Add((complement, num));
+
+            set.Add(num);
+        }
+
+        return result;
+    }
+
+    static void Main()
+    {
+        int[] arr = { 2, 7, 11, 15, -2, 4 };
+        int target = 9;
+        var pairs = FindPairs(arr, target);
+
+        foreach (var pair in pairs)
+            Console.WriteLine($"({pair.Item1}, {pair.Item2})");
+        // Output: (2, 7) and (-2, 11)
+    }
+}
+
+using System;
+using System.Linq;
+
+class Program
+{
+    static bool AreAnagrams(string s1, string s2)
+    {
+        if (s1.Length != s2.Length)
+            return false;
+
+        return s1.OrderBy(c => c).SequenceEqual(s2.OrderBy(c => c));
+    }
+
+    static void Main()
+    {
+        Console.WriteLine(AreAnagrams("listen", "silent")); // Output: True
+    }
+}
+
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static char FindFirstNonRepeating(string s)
+    {
+        Dictionary<char, int> freq = new Dictionary<char, int>();
+
+        foreach (char c in s)
+            freq[c] = freq.ContainsKey(c) ? freq[c] + 1 : 1;
+
+        foreach (char c in s)
+            if (freq[c] == 1)
+                return c;
+
+        return '_'; // Default case if no unique character is found
+    }
+
+    static void Main()
+    {
+        Console.WriteLine(FindFirstNonRepeating("aabbcdeff")); // Output: "c"
+    }
+}
+
+using System;
+
+class Program
+{
+    static int FindMajorityElement(int[] arr)
+    {
+        int count = 0, candidate = 0;
+
+        foreach (int num in arr)
+        {
+            if (count == 0)
+                candidate = num;
+
+            count += (num == candidate) ? 1 : -1;
+        }
+
+        return candidate;
+    }
+
+    static void Main()
+    {
+        int[] arr = { 3, 3, 4, 2, 3, 3, 3, 1 };
+        Console.WriteLine(FindMajorityElement(arr)); // Output: 3
+    }
+}
