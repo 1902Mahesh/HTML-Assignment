@@ -1,0 +1,92 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Choose an option:");
+        Console.WriteLine("1. Find Missing Number");
+        Console.WriteLine("2. String Compression");
+        Console.WriteLine("3. Find Pairs with Given Sum");
+        Console.WriteLine("4. Check Anagram");
+        Console.WriteLine("5. Find First Non-Repeating Character");
+        Console.WriteLine("6. Find Majority Element");
+        Console.Write("Enter your choice (1-6): ");
+        
+        int choice = Convert.ToInt32(Console.ReadLine());
+        
+        switch (choice)
+        {
+            case 1:
+                RunFindMissingNumber();
+                break;
+            case 2:
+                RunStringCompression();
+                break;
+            case 3:
+                RunFindPairs();
+                break;
+            case 4:
+                RunCheckAnagram();
+                break;
+            case 5:
+                RunFirstNonRepeatingCharacter();
+                break;
+            case 6:
+                RunMajorityElement();
+                break;
+            default:
+                Console.WriteLine("Invalid choice. Exiting...");
+                break;
+        }
+    }
+    
+    // Define methods for each problem here
+    static void RunFindMissingNumber()
+    {
+        int[] arr = { 1, 2, 4, 5, 6 };
+        int n = 6;
+        Console.WriteLine($"Missing number: {FindMissingNumber(arr, n)}");
+    }
+    
+    static void RunStringCompression()
+    {
+        Console.Write("Enter a string: ");
+        string input = Console.ReadLine();
+        Console.WriteLine($"Compressed: {CompressString(input)}");
+    }
+    
+    static void RunFindPairs()
+    {
+        int[] arr = { 2, 7, 11, 15, -2, 4 };
+        int target = 9;
+        var pairs = FindPairs(arr, target);
+        
+        foreach (var pair in pairs)
+            Console.WriteLine($"({pair.Item1}, {pair.Item2})");
+    }
+
+    static void RunCheckAnagram()
+    {
+        Console.Write("Enter first string: ");
+        string s1 = Console.ReadLine();
+        Console.Write("Enter second string: ");
+        string s2 = Console.ReadLine();
+        Console.WriteLine($"Are anagrams: {AreAnagrams(s1, s2)}");
+    }
+
+    static void RunFirstNonRepeatingCharacter()
+    {
+        Console.Write("Enter a string: ");
+        string s = Console.ReadLine();
+        Console.WriteLine($"First non-repeating character: {FindFirstNonRepeating(s)}");
+    }
+
+    static void RunMajorityElement()
+    {
+        int[] arr = { 3, 3, 4, 2, 3, 3, 3, 1 };
+        Console.WriteLine($"Majority element: {FindMajorityElement(arr)}");
+    }
+
+    // Add your previously written methods for each problem here...
+}
