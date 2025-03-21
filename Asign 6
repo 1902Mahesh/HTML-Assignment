@@ -107,3 +107,52 @@ $(document).ready(function() {
     });
 });
 
+
+<script>
+    $(document).ready(function () {
+        let selectedModifiers = [];
+
+        // Get preselected values from hidden field
+        let preselectedValues = $("#selectedModifierGroups").val();
+        if (preselectedValues) {
+            selectedModifiers = preselectedValues.split(",");
+        }
+
+        // Pre-select checkboxes and update button text in edit mode
+        $(".modifier-checkbox").each(function () {
+            if (selectedModifiers.includes($(this).val())) {
+                $(this).prop("checked", true);
+            }
+        });
+
+        // Update button text based on selected values
+        $("#modifierDropdown").text(selectedModifiers.length > 0 
+            ? selectedModifiers.length + " Selected" 
+            : "Select Modifier Group(s)");
+
+        // Update hidden input field when checkboxes change
+        $(".modifier-checkbox").change(function () {
+            let value = $(this).val();
+            if ($(this).is(":checked")) {
+                if (!selectedModifiers.includes(value)) {
+                    selectedModifiers.push(value);
+                }
+            } else {
+                selectedModifiers = selectedModifiers.filter(item => item !== value);
+            }
+
+            // Update the hidden input with selected values
+            $("#selectedModifierGroups").val(selectedModifiers.join(","));
+
+            // Update dropdown button text
+            $("#modifierDropdown").text(selectedModifiers.length > 0 
+                ? selectedModifiers.length + " Selected" 
+                : "Select Modifier Group(s)");
+        });
+
+        // Ensure the hidden input field is updated before form submission
+        $("#modifierItemForm").submit(function () {
+            $("#selectedModifierGroups").val(selectedModifiers.join(","));
+        });
+    });
+</script>
