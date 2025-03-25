@@ -156,3 +156,24 @@ $(document).ready(function() {
         });
     });
 </script>
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const dateRangeSelect = document.getElementById("dateRange"); // Dropdown ID
+    const fromDateInput = document.getElementById("fromDate"); // From Date Input ID
+    const toDateInput = document.getElementById("toDate"); // To Date Input ID
+
+    dateRangeSelect.addEventListener("change", function () {
+        if (this.value === "last7days") { // Check if "Last 7 Days" is selected
+            const today = new Date();
+            const last7Days = new Date();
+            last7Days.setDate(today.getDate() - 7);
+
+            // Format as YYYY-MM-DD (suitable for date input fields)
+            const formatDate = (date) => date.toISOString().split("T")[0];
+
+            fromDateInput.value = formatDate(last7Days);
+            toDateInput.value = formatDate(today);
+        }
+    });
+});
