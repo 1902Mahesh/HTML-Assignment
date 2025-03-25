@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+            background-color: #17a2b8;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .table-container {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .summary {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .export-btn {
+            background: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Order Summary <span class="status">In Progress</span></h2>
+            <button class="export-btn">Export</button>
+        </div>
+        <p><strong>Invoice No.:</strong> #DOM2025000229</p>
+        <p><strong>Paid on:</strong> - | <strong>Placed on:</strong> 20-38-2024 15:12 | <strong>Modified on:</strong> 22-01-2025 11:47</p>
+        
+        <table class="table-container">
+            <tr>
+                <th>Customer Details</th>
+                <th>Table Details</th>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Name:</strong> ajeet lodhi<br>
+                    <strong>Phone:</strong> 9012345231<br>
+                    <strong>No of Persons:</strong> 7<br>
+                    <strong>Email:</strong> ajeet@yopmail.com
+                </td>
+                <td>
+                    <strong>Table:</strong> T3<br>
+                    <strong>Section:</strong> Ground Floor
+                </td>
+            </tr>
+        </table>
+        
+        <h3>Order Items</h3>
+        <table class="table-container">
+            <tr>
+                <th>Sr.No</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total Amount</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Grilled burger <br> <small>• Tomato</small></td>
+                <td>1</td>
+                <td>₹70.00</td>
+                <td>₹70.00</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Margherita <br> <small>• Test</small></td>
+                <td>2</td>
+                <td>₹120.00</td>
+                <td>₹240.00</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Grilled burger <br> <small>• Babycorn</small></td>
+                <td>1</td>
+                <td>₹70.00</td>
+                <td>₹70.00</td>
+            </tr>
+        </table>
+        
+        <div class="summary">
+            <p><strong>Subtotal:</strong> ₹399.00</p>
+            <p><strong>CGST:</strong> ₹47.88</p>
+            <p><strong>SGST:</strong> ₹150.00</p>
+            <p><strong>GST:</strong> ₹7.98</p>
+            <p><strong>Other:</strong> ₹19.95</p>
+            <h3><strong>Total:</strong> ₹624.81</h3>
+        </div>
+    </div>
+</body>
+</html>
