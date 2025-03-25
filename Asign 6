@@ -177,3 +177,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const dateRangeSelect = document.getElementById("dateRange");
+    const fromDateInput = document.getElementById("fromDate");
+    const toDateInput = document.getElementById("toDate");
+
+    dateRangeSelect.addEventListener("change", function () {
+        if (this.value === "last7days") {
+            const today = new Date();
+            const last7Days = new Date();
+            last7Days.setDate(today.getDate() - 6); // Subtract 6 to include today in the range
+
+            const formatDate = (date) => {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            };
+
+            fromDateInput.value = formatDate(last7Days);
+            toDateInput.value = formatDate(today);
+        }
+    });
+});
