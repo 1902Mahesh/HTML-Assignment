@@ -1,0 +1,58 @@
+public async Task<KOTViewModel> Get(long currentCategory = 0, string orderStatus = "In Progress")
+{
+    var orders = await _context.Orders
+        .Include(o => o.OrderstatusNavigation)
+        .Include(o => o.Ordertablemappings)
+            .ThenInclude(otm => otm.Table)
+                .ThenInclude(t => t.Section)
+        .Include(o => o.Orderdetails)
+            .ThenInclude(od => od.Item)
+                .ThenInclude(i => i.Category)
+        .Include(o => o.Orderdetails)
+            .ThenInclude(od => od.Orderitemsmodifiers)
+                .ThenInclude(om => om.ModifierItem)
+        .Where(o => o.OrderstatusNavigation.Name == orderStatus &&
+                    (currentCategory == 0 || o.Orderdetails.Any(od => od.Item.Category.CategoryId == currentCategory)))
+        .ToListAsync();
+
+    var kotCards = orders
+        .Select(o => new KOTCardViewModel
+        {
+            OrderId = o.Id,
+            TableList = o.Ordertablemappings.Select(ot => ot.Table.Name).ToList(),
+            SectionName = o.Ordertablemappings.Select(ot => ot.Table.Section.Name).FirstOrDefault()!,
+            OrderDuration = o.CreatedAt,
+            OrderInstruction = o.Instruction,
+            Items = o.Orderdetails
+                .Where(od => currentCategory == 0 || od.Item.Category.CategoryId == currentCategory)
+                .Select(od => new OrderItemViewModel
+                {
+                    ItemId = od.Itemid,
+                    ItemName = od.Item.Name,
+                    Quantity = od.Quantity,
+                    AddOns = od.Orderitemsmodifiers.Select(om => new ModifierItemViewModel
+                    {
+                        ModifierItemId = om.ModifierItemId,
+                        Name = om.ModifierItem.Name,
+                        Quantity = om.Quantity
+                    }).ToList()
+                }).ToList()
+        })
+        .DistinctBy(k => k.OrderId) // Requires .NET 6+ or use `.GroupBy().First()` if earlier
+        .ToList();
+
+    var model = new KOTViewModel
+    {
+        CurrentCategory = currentCategory,
+        CategoryName = currentCategory == 0
+            ? "All"
+            : orders.SelectMany(o => o.Orderdetails)
+                    .Where(od => od.Item.Category.CategoryId == currentCategory)
+                    .Select(od => od.Item.Category.Name)
+                    .FirstOrDefault(),
+        OrderStatus = orderStatus,
+        KOTCards = kotCards
+    };
+
+    return model;
+}
