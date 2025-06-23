@@ -1,0 +1,59 @@
+public static class DynamicReportQueryBuilder
+{
+    public static string GenerateQuery(AddEditReportVM report)
+    {
+        if (report == null || report.Tables.Count == 0 || report.Columns.Count == 0)
+            throw new ArgumentException("Invalid report configuration.");
+
+        var sb = new StringBuilder();
+
+        // SELECT
+        sb.AppendLine(BuildSelectClause(report.Columns));
+
+        // FROM + JOINS
+        sb.AppendLine(BuildFromAndJoins(report.Tables, report.Relationships));
+
+        // WHERE (Date Filter)
+        var whereClause = BuildWhereClause(report.DateFilter);
+        if (!string.IsNullOrEmpty(whereClause))
+        {
+            sb.AppendLine("WHERE");
+            sb.AppendLine(whereClause);
+        }
+
+        return sb.ToString();
+    }
+
+    private static string BuildSelectClause(List<Columns> columns)
+    {
+        var selectParts = columns
+            .Select(c => $"[{c.TableName}].[{c.Name}] AS [{c.TableName}_{c.Name}]");
+
+        return "SELECT " + string.Join(", ", selectParts);
+    }
+
+    private static string BuildFromAndJoins(List<AccesibleTableVM> tables, List<RelationshipsVM> relationships)
+    {
+        var baseTable = tables.FirstOrDefault(t => t.IsBaseTable);
+        if (baseTable == null) throw new Exception("No base table defined.");
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"FROM [{baseTable.TableName}]");
+
+        foreach (var rel in relationships)
+        {
+            var joinType = rel.IsNullAllow ? "LEFT JOIN" : "INNER JOIN";
+            sb.AppendLine($"{joinType} [{rel.ChildTable.Name}] ON [{rel.BaseTable.Name}].[{rel.BaseTable.Column}] = [{rel.ChildTable.Name}].[{rel.ChildTable.Column}]");
+        }
+
+        return sb.ToString();
+    }
+
+    private static string BuildWhereClause(DateFilter? dateFilter)
+    {
+        if (dateFilter == null || string.IsNullOrEmpty(dateFilter.Column) || dateFilter.FromDate == null || dateFilter.ToDate == null)
+            return string.Empty;
+
+        return $"[{dateFilter.TableId}].[{dateFilter.Column}] BETWEEN '{dateFilter.FromDate:yyyy-MM-dd}' AND '{dateFilter.ToDate:yyyy-MM-dd}'";
+    }
+}
