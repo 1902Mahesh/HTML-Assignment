@@ -1,0 +1,143 @@
+CREATE OR ALTER PROCEDURE spGetReportDetails
+    @ReportId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        R.Id,
+        R.Name,
+        R.Description,
+
+        -- Sub-query: Tables
+        (
+            SELECT 
+                RTA.Id,
+                RTA.TableName,
+                RTA.IsBaseTable
+            FROM ReportTableAssociates RTA
+            WHERE RTA.ReportId = R.Id AND RTA.DeletedById IS NULL
+            FOR JSON PATH
+        ) AS Tables,
+
+        -- Sub-query: Columns
+        (
+            SELECT 
+                TCA.Id,
+                TCA.ReportTableAssociateId AS TableId,
+                TCA.ColumnName AS Name,
+                TCA.ColumnType AS Type,
+                RTA.TableName
+            FROM TableColumnAssociates TCA
+            INNER JOIN ReportTableAssociates RTA ON TCA.ReportTableAssociateId = RTA.Id
+            WHERE TCA.ReportId = R.Id AND TCA.DeletedById IS NULL
+            FOR JSON PATH
+        ) AS Columns,
+
+        -- Sub-query: Relationships
+        (
+            SELECT 
+                TR.Id,
+                TR.IsNullAllow,
+                BT.Id AS BaseTableId,
+                BT.TableName AS BaseTableName,
+                TR.BaseTableColumn,
+                CT.Id AS ChildTableId,
+                CT.TableName AS ChildTableName,
+                TR.ChildTableColumn
+            FROM TableRelationships TR
+            INNER JOIN ReportTableAssociates BT ON TR.BaseTableId = BT.Id
+            INNER JOIN ReportTableAssociates CT ON TR.ChildTableId = CT.Id
+            WHERE TR.ReportId = R.Id AND TR.DeletedById IS NULL
+            FOR JSON PATH
+        ) AS Relationships,
+
+        -- Sub-query: DateFilter
+        (
+            SELECT TOP 1
+                RCF.Id,
+                RCF.ColumnName AS Column,
+                RTA.Id AS TableId,
+                RCF.FromDate,
+                RCF.ToDate
+            FROM ReportColumnFilters RCF
+            INNER JOIN ReportTableAssociates RTA ON RCF.ReportId = RTA.ReportId
+            WHERE RCF.ReportId = R.Id AND RCF.DeletedById IS NULL
+                  AND RCF.FilterId = 1 AND RCF.FromDate IS NOT NULL AND RCF.ToDate IS NOT NULL
+            FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+        ) AS DateFilter
+
+    FROM Reports R
+    WHERE R.Id = @ReportId AND R.DeletedById IS NULL
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER;
+END
+
+
+
+
+
+CREATE OR ALTER PROCEDURE spGetReportDetails
+    @ReportId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- 1. Get Report Info
+    SELECT 
+        Id,
+        Name,
+        Description
+    FROM Reports
+    WHERE Id = @ReportId AND DeletedById IS NULL;
+
+    -- 2. Get Associated Tables
+    SELECT 
+        RTA.Id,
+        RTA.ReportId,
+        RTA.TableName,
+        RTA.IsBaseTable
+    FROM ReportTableAssociates RTA
+    WHERE RTA.ReportId = @ReportId AND RTA.DeletedById IS NULL;
+
+    -- 3. Get Columns
+    SELECT 
+        TCA.Id,
+        TCA.ReportId,
+        TCA.ReportTableAssociateId AS TableId,
+        TCA.ColumnName AS Name,
+        TCA.ColumnType AS Type,
+        RTA.TableName
+    FROM TableColumnAssociates TCA
+    INNER JOIN ReportTableAssociates RTA ON TCA.ReportTableAssociateId = RTA.Id
+    WHERE TCA.ReportId = @ReportId AND TCA.DeletedById IS NULL;
+
+    -- 4. Get Relationships
+    SELECT 
+        TR.Id,
+        TR.IsNullAllow,
+        BT.Id AS BaseTableId,
+        BT.TableName AS BaseTableName,
+        TR.BaseTableColumn,
+        CT.Id AS ChildTableId,
+        CT.TableName AS ChildTableName,
+        TR.ChildTableColumn
+    FROM TableRelationships TR
+    INNER JOIN ReportTableAssociates BT ON TR.BaseTableId = BT.Id
+    INNER JOIN ReportTableAssociates CT ON TR.ChildTableId = CT.Id
+    WHERE TR.ReportId = @ReportId AND TR.DeletedById IS NULL;
+
+    -- 5. Get Date Filter
+    SELECT 
+        RCF.Id,
+        RCF.ReportId,
+        RCF.ColumnName AS Column,
+        RTA.Id AS TableId,
+        RCF.FromDate,
+        RCF.ToDate
+    FROM ReportColumnFilters RCF
+    INNER JOIN ReportTableAssociates RTA ON RCF.ColumnName IS NOT NULL 
+        AND RCF.ReportId = RTA.ReportId
+    WHERE RCF.ReportId = @ReportId AND RCF.DeletedById IS NULL
+          AND RCF.FilterId = 1 -- Optional: assuming 1 = Date Filter
+          AND RCF.FromDate IS NOT NULL AND RCF.ToDate IS NOT NULL;
+END
